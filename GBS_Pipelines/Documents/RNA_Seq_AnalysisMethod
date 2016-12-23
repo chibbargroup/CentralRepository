@@ -1,0 +1,98 @@
+1) Quality Trimming with Trimmomatic 
+HEADCROP:13 LEADING:20 TRAILING:20 SLIDINGWINDOW:4:20 MINLEN:36
+
+2) FASTQC Analysis
+
+3) Tophat Alignment of reads to refrence
+
+http://cole-trapnell-lab.github.io/cufflinks/manual/
+
+4) Cufflinks Assembly of alignments into a Merged GTF File
+
+5) Cuffmerge to create a transcriptome assembly GTF file for the genome.
+
+6) Use the cuffmerge gtf tile and htseq-count to count the reads in the alignments.  Samtools has to sort the alignments before count can be done.
+
+http://www-huber.embl.de/HTSeq/doc/count.html#count
+
+    samtools sort -n ./HI.3381.002.Index_11.18_R/$1/accepted_hits.bam ./HI.3381.002.Index_11.18_R/$1/accepted_hits.sort
+    htseq-count -q -f bam -r name -s no ./HI.3381.002.Index_11.18_R/$1/accepted_hits.sort.bam ./merged_asm_$1/merged.gtf > ./HI.3381.002.Index_11.18_R/$1/htseq_count
+
+
+7) Create a Map file for use in DESeq2:
+
+    sampleName,fileName,DAF,Stats
+    250_D0_A,250_D0_A.htc,D0,resistant
+    250_D3_A,250_D3_A.htc,D3,resistant
+    250_D6_A,250_D6_A.htc,D6,resistant
+    202_D0_A,202_D0_A.htc,D0,resistant
+    202_D3_A,202_D3_A.htc,D3,resistant
+    202_D6_A,202_D6_A.htc,D6,resistant
+    66_D0_A,66_D0_A.htc,D0,resistant
+    66_D3_A,66_D3_A.htc,D3,resistant
+    66_D6_A,66_D6_A.htc,D6,resistant
+    248_D0_A,248_D0_A.htc,D0,resistant
+    248_D3_A,248_D3_A.htc,D3,resistant
+    248_D6_A,248_D6_A.htc,D6,resistant
+    sumai_D0_A,sumai_D0_A.htc,D0,resistant
+    sumai_D3_A,sumai_D3_A.htc,D3,resistant
+    sumai_D6_A,sumai_D6_A.htc,D6,resistant
+    123_D0_A,123_D0_A.htc,D0,Susceptible
+    123_D3_A,123_D3_A.htc,D3,Susceptible
+    123_D6_A,123_D6_A.htc,D6,Susceptible
+    68_D0_A,68_D0_A.htc,D0,Susceptible
+    68_D3_A,68_D3_A.htc,D3,Susceptible
+    68_D6_A,68_D6_A.htc,D6,Susceptible
+    nanda_D0_A,nanda_D0_A.htc,D0,Susceptible
+    nanda_D3_A,nanda_D3_A.htc,D3,Susceptible
+    nanda_D6_A,nanda_D6_A.htc,D6,Susceptible
+
+    
+8) Use R to Run DESeq2 to analyize the data:
+
+https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf
+http://www.bioconductor.org/help/workflows/rnaseqGene/
+
+    library(DESeq2)
+    table<-read.csv("DESeq2_Map.csv",header=TRUE)
+    dds <- DESeqDataSetFromHTSeqCount(sampleTable=table,directory="./",design= ~ DAF + Stats + DAF:Stats)
+    dds <- dds[rowSums(counts(dds))>1,]
+    dds <-  DESeq(dds, test="LRT", reduced = ~ DAF + Stats)
+    library("sva")
+    dat <- counts(dds, normalized=TRUE)
+    idx <- rowMeans(dat) > 1
+    dat <- dat[idx,]
+    mod <- model.matrix(~ DAF + Stats + DAF:Stats, colData(dds))
+    mod0 <- model.matrix(~ 1, colData(dds))
+    svseq <- svaseq(dat, mod, mod0, n.sv=2)
+    ddssva <- dds
+    ddssva$SV1 <- svseq$sv[,1]
+    ddssva$SV2 <- svseq$sv[,2]
+    design(ddssva) <- ~ SV1 + SV2 + DAF + Stats + DAF:Stats
+    ddssva <-  DESeq(ddssva, test="LRT", reduced = ~ SV1 + SV2 + DAF + Stats)
+    ressva <- results(ddssva)
+    ressvaOrdered <- ressva[order(ressva$padj),]
+    head(ressvaOrdered)
+    ressvaOrderedFiltered <- ressvaOrdered[ressvaOrdered$log2FoldChange >= 2 | ressvaOrdered$log2FoldChange <= -2,]
+    write.csv(as.data.frame(ressvaOrderedFiltered),file="results.csv")
+
+
+
+    #Count Plots
+    library(ggplot2)
+    data <- plotCounts(ddssva, gene="XLOC_026172", intgroup=c("Stats","DAF"), returnData=TRUE)
+    ggplot(data, aes(x=DAF, y=count, color=Stats, group=Stats)) + geom_point() + stat_smooth(se=FALSE,method="loess") +  scale_y_log10()
+
+
+
+    #PCA plot
+    rld <- rlog(ddssva, blind=TRUE)
+    data <- plotPCA(rld, intgroup = c( "dex", "cell"), returnData=TRUE)
+    percentVar <- round(100 * attr(data, "percentVar"))
+    ggplot(data, aes(PC1, PC2, color=DAF, shape=Stats)) + geom_point(size=3) + xlab(paste0("PC1: ",percentVar[1],"% variance")) + ylab(paste0("PC2: ",percentVar[2],"% variance"))
+
+    #MDS plot
+    sampleDists <- dist( t( assay(rld) ) )
+    sampleDistMatrix <- as.matrix( sampleDists )
+    mdsData <- data.frame(cmdscale(sampleDistMatrix))
+    mds <- cbind(mdsData, as.data.frame(colData(rld)))
