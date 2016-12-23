@@ -1,0 +1,40 @@
+ 
+		    library(DESeq2)
+	    	 table<-read.csv("DESeq2_Map.csv",header=TRUE)
+	    	 dds <- DESeqDataSetFromHTSeqCount(sampleTable=table,directory="./",design= ~ DAF + Stats + DAF:Stats)
+	    	 dds <- dds[rowSums(counts(dds))>1,]
+	    	 dds <-  DESeq(dds, test="LRT", reduced = ~ DAF + Stats)
+	    	 library("sva")
+	     	 dat <- counts(dds, normalized=TRUE)
+	    	 idx <- rowMeans(dat) > 1
+	    	 dat <- dat[idx,]
+		    mod <- model.matrix(~ DAF + Stats + DAF:Stats, colData(dds))
+		    mod0 <- model.matrix(~ 1, colData(dds))
+		    svseq <- svaseq(dat, mod, mod0, n.sv=2)
+		    ddssva <- dds
+		    ddssva$SV1 <- svseq$sv[,1]
+		    ddssva$SV2 <- svseq$sv[,2]
+		    design(ddssva) <- ~ SV1 + SV2 + DAF + Stats + DAF:Stats
+		    ddssva <-  DESeq(ddssva, test="LRT", reduced = ~ SV1 + SV2 + DAF + Stats)
+		    ressva <- results(ddssva)
+		    ressvaOrdered <- ressva[order(ressva$padj),]
+		    head(ressvaOrdered)
+		    ressvaOrderedFiltered <- ressvaOrdered[ressvaOrdered$log2FoldChange >= 2 | ressvaOrdered$log2FoldChange <= -2,]
+		    write.csv(as.data.frame(ressvaOrderedFiltered),file="results.csv")
+
+		    #Count Plots
+		    library(ggplot2)
+		    data <- plotCounts(ddssva, gene="XLOC_026172", intgroup=c("Stats","DAF"), returnData=TRUE)
+		    ggplot(data, aes(x=DAF, y=count, color=Stats, group=Stats)) + geom_point() + stat_smooth(se=FALSE,method="loess") +  scale_y_log10()
+
+		    #PCA plot
+		    rld <- rlog(ddssva, blind=TRUE)
+		    data <- plotPCA(rld, intgroup = c( "dex", "cell"), returnData=TRUE)
+		    percentVar <- round(100 * attr(data, "percentVar"))
+		    ggplot(data, aes(PC1, PC2, color=DAF, shape=Stats)) + geom_point(size=3) + xlab(paste0("PC1: ",percentVar[1],"% variance")) + ylab(paste0("PC2: ",percentVar[2],"% variance"))
+
+		    #MDS plot
+		    sampleDists <- dist( t( assay(rld) ) )
+		    sampleDistMatrix <- as.matrix( sampleDists )
+		    mdsData <- data.frame(cmdscale(sampleDistMatrix))
+		    mds <- cbind(mdsData, as.data.frame(colData(rld)))
