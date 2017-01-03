@@ -1,0 +1,5 @@
+C:\Users\John\Desktop\Test\PyMca\Fit
+C:\Users\John\Desktop\Test\labels.csv
+C:\Users\John\Desktop\Test\Io files
+C:\Users\John\Desktop\Test\
+False
