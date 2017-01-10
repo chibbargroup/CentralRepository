@@ -1,0 +1,4 @@
+1) Genbanker: Reads lists of accession numbers and fetches and saves the corresponding genbank files in a specified directory
+   Usage: python Genbanker.py Input_File_Directory Save_Directory Retrieval_Type 
+   (Retrieval type = Protein, protein, prot, Nucleotide, nucleotide, nt)
+
