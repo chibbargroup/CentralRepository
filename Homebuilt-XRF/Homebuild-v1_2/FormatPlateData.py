@@ -1,5 +1,6 @@
 ##Written by Daniel Sanche
 ##Modified to change output directory on 10/27/2016
+##Modified to clean up file output code 1/23/2017
 
 import numpy as np
 import pandas as pd
@@ -95,17 +96,15 @@ def combinePeakData(peakdatDict):
     return combinedData
 
 #iterates though all .fit files in a directory, merges their data into a single dataframe, and saves it to disk
-def extractDirectory(file_dir, output_dir, ydatOut="ydata.csv", peakfitOut="peakfit.csv", delim=","):
+def extractDirectory(file_dir, output_dir, delim=","):
     dirsDict = {}
     ydatdir = join(output_dir,'spectra')
     peakfitdir = join(output_dir, 'peakfits')
 
     if not isdir(ydatdir):
         mkdir(ydatdir)
-
     if not isdir(peakfitdir):
         mkdir(peakfitdir)
-
 
     all_files = [f for f in listdir(file_dir) if isfile(join(file_dir, f))]
     for root, dirs, files in walk(file_dir):
@@ -124,19 +123,16 @@ def extractDirectory(file_dir, output_dir, ydatOut="ydata.csv", peakfitOut="peak
                 peakFit = extractPeakFit(file, spectra_num)
                 peakfitDict[spectra_num] = peakFit
                 dirsDict[root] = [ydatDict, peakfitDict]
+    
     for root in dirsDict.keys():
         ydatDict = dirsDict[root][0]
         peakfitDict = dirsDict[root][1]
         if len(ydatDict) > 0 and len(peakfitDict) > 0:
             ydatCombined = combineYdata(ydatDict)
-            ydatCombined.to_csv(join(ydatdir, basename(root).strip('_trans.csv_FITDIR') + "_" + ydatOut), sep=delim, index=False)
-            print('Writing...' + join(ydatdir + basename(root).strip('_trans.csv_FITDIR') + "_" + ydatOut))
+            ydat_filename = join(ydatadir, (basename(root).rstrip('_trans.csv_FITDIR') + "_ydata.csv"))
+            ydatCombined.to_csv(ydat_filename, sep=delim, index=False)
+            print('Writing...' + ydat_filename)
             peakcombined = combinePeakData(peakfitDict)
-            peakcombined.to_csv(join(peakfitdir, basename(root).strip('_trans.csv_FITDIR') + "_" +peakfitOut), sep=delim, index=False)
-            print('Writing...' + join(peakfitdir, basename(root).strip('_trans.csv_FITDIR') + "_" +peakfitOut))
-
-path = "./"
-if len(sys.argv) > 1:
-    path = sys.argv[1]
-
-#extractDirectory(path)
+            peakfit_filename = join(ydatadir, (basename(root).rstrip('_trans.csv_FITDIR') + "_peakfit.csv"))
+            peakcombined.to_csv(peakfit_filename, sep=delim, index=False)
+            print('Writing...' + peakfit_filename)
