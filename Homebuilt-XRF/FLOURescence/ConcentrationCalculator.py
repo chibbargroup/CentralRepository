@@ -79,10 +79,3 @@ def Concentration_Analysis(raw_sample_data_file, avg_sample_data_file, calibrati
 	results = Error_Analysis(avg_data, cal_curves, replicate_count)
 	results.to_csv(join(output_dir, "avg_results.csv"))
 	return results
-
-data_file = 'C:/Users/John/Desktop/Test/Output/sample_data.csv'
-avg_data = 'C:/Users/John/Desktop/Test/Output/sample_data_avg.csv'
-output_dir = 'C:/Users/John/Desktop/Test/Output/'
-calibration_file = 'C:/Users/John/Desktop/Test/Output/calibration_curves.csv'
-
-Concentration_Analysis(data_file, avg_data, calibration_file, output_dir)

@@ -1,7 +1,7 @@
 '''
 NormalizeData_v2
 Written by J.Hayes
-Last editted 1/24/2017
+Last editted 1/30/2017
 
 Program reads through peakfit files, adds spectra labels and io data, and then returns the
 normalized peak areas for the elements of interest
@@ -14,7 +14,7 @@ Program Inputs:
 5) calcium analysis boolean (true or false)
 
 Program Outputs:
-None (saves normalized data in Norm folder created in output directory)
+None (saves normalized data in normalized folder created in output directory)
 
 '''
 
@@ -85,7 +85,7 @@ def Data_Process(data_file, header_file, io_dir, ca_analysis):
 
 def Batch_Process(peakfit_dir, header_file, io_dir, output_dir, ca_analysis):
 	#Make sure save directory exists, if not, make it
-	save_dir = join(output_dir, 'Norm')
+	save_dir = join(output_dir, 'normalized')
 	if not isdir(save_dir):
 		mkdir(save_dir)
 

@@ -13,10 +13,10 @@ this file it will ask if the user would like to use these values for the calibra
 
 Output:
 Saves the regression data to file calibration_curves.csv file located in the output directory
-This file contains the following: slope, intercept, r-value, p-value, std error, # of pts, 
-LOD, LOQ, xi^2, and xi
+This file contains the following: slope, intercept, r-value, p-value, std error, # of calib. pts, 
+LOD, LOQ, std dev y, xi^2, and xi
 
-Also saves the calibration values to the file cal_concentrations in the specified output directory
+Also saves the calibration values to the file cal_concentrations.csv in the specified output directory
 
 """
 import pandas as pd
@@ -128,4 +128,3 @@ def Linear_Regression_Script(cal_data_file, output_dir):
 	cal_curves = Linear_Regression_Calculator(data)
 	cal_curves.to_csv(join(output_dir, "calibration_curves.csv"))
 
-Linear_Regression_Script(data_file, output_dir)

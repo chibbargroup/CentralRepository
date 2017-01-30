@@ -96,7 +96,7 @@ def combinePeakData(peakdatDict):
     return combinedData
 
 #iterates though all .fit files in a directory, merges their data into a single dataframe, and saves it to disk
-def extractDirectory(file_dir, output_dir, delim=","):
+def ExtractDirectory(file_dir, output_dir, delim=","):
     dirsDict = {}
     ydatdir = join(output_dir,'spectra')
     peakfitdir = join(output_dir, 'peakfits')

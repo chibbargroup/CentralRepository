@@ -2,13 +2,13 @@
 FileCombiner.py
 Written by J. Hayes, Last edited 1/27/2017
 
-Purpose: Combineds the normalized data into a single data frame and then parses out
+Purpose: Combines the normalized data into a single data frame and then parses out
 the calibration data and sample data into separate files. Then determines the average
 value for each calibration point and sample point
 
 Inputs:
 1) norm_data_file_dir: Directory which contains the normalized peak area data
-2) Output_Dir: Where the resulting files should be saved
+2) output_dir: Where the resulting files should be saved
 
 Output:
 Program saves 4 files:
@@ -178,6 +178,3 @@ def Data_Separator(norm_data_dir, output_dir):
 	Sample_Data_Separator(norm_data_dir, output_dir)
 	Calibration_Data_Separator(norm_data_dir, output_dir)
 
-datafiledir = 'C:/Users/John/Desktop/Test/Output/Norm'
-output_dir = 'C:/Users/John/Desktop/Test/Output/'
-Data_Separator(datafiledir, output_dir)
