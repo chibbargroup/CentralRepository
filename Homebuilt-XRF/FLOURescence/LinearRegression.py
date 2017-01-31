@@ -124,7 +124,7 @@ def Std_Dev_Y_Calculator(cal_data, concentrations, slope, intercept):
 
 #Run the script
 def Linear_Regression_Script(cal_data_file, output_dir):
-	data = Add_Cal_Concs(data_file, output_dir)
+	data = Add_Cal_Concs(cal_data_file, output_dir)
 	cal_curves = Linear_Regression_Calculator(data)
 	cal_curves.to_csv(join(output_dir, "calibration_curves.csv"))
 

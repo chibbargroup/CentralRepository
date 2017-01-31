@@ -1,4 +1,4 @@
-C:\Users\John\Desktop\
-C:\Users\John\Desktop\test1.csv
-C:\Users
-C:\Users\John\Desktop\foobar2
+C:\Users\John\Desktop\Test\FIT
+C:\Users\John\Desktop\Test\labels.csv
+C:\Users\John\Desktop\Test\Io_Files
+C:\Users\John\Desktop\Test\Output

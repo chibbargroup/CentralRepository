@@ -88,7 +88,7 @@ def Data_Combiner(norm_file_dir):
     data = pd.DataFrame()
     all_files = all_files = [f for f in listdir(norm_file_dir) if isfile(join(norm_file_dir, f))]
     for f in all_files:
-        df = pd.read_csv(join(datafiledir,f), index_col = 0)
+        df = pd.read_csv(join(norm_file_dir,f), index_col = 0)
         data = pd.concat([data,df], axis = 1)
     data = data.drop('Io')
     return data 

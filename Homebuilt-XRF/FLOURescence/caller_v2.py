@@ -51,6 +51,8 @@ def Normalize_Data(header_file, io_file_dir, output_dir, process_monitor):
 def File_Combiner(output_dir, process_monitor):
 	norm_file_dir = join(output_dir, 'normalized')
 	new_output_dir = join(output_dir, 'combined_files')
+	if not isdir(new_output_dir):
+		mkdir(new_output_dir)
 	Data_Separator(norm_file_dir, new_output_dir)
 	process_monitor['FileCombine'] = True
 	return process_monitor
@@ -60,6 +62,8 @@ def Linear_Regression(output_dir,process_monitor):
 	data_dir = join(output_dir, 'combined_files')
 	cal_data_file = join(data_dir, 'calibration_data_avg.csv')
 	new_output_dir = join(output_dir, 'calibration_results')
+	if not isdir(new_output_dir):
+		mkdir(new_output_dir)
 	Linear_Regression_Script(cal_data_file, new_output_dir)
 	process_monitor['LinRegress'] = True
 	return process_monitor
@@ -98,24 +102,24 @@ def Action_Decider():
 def Action_Taker(action, fit_dir, header_file, io_file_dir, output_dir, process_monitor):
 	action = int(action)
 	if action == 1:
-		process_monitor = Format_Plate_Data(fit_dir, output_dir)
+		process_monitor = Format_Plate_Data(fit_dir, output_dir, process_monitor)
 		return process_monitor
 
-	elif action == 2 and process_monitor['FormatPlate']:
-		process_monitor = Normalize_Data(header_file, io_file_dir, output_dir)
+	if action == 2 and process_monitor['FormatPlate']:
+		process_monitor = Normalize_Data(header_file, io_file_dir, output_dir, process_monitor)
 		return process_monitor
 	elif action == 2:
 		print("It seems you haven't run step 1 yet. Running this step right now may break me.")
 		try_anyway = Yes_No_Response("Would you like to try to run this anyways? [Y/N] ")
 		if try_anyway:
 			try:
-				process_monitor = Normalize_Data(header_file, io_file_dir, output_dir)
+				process_monitor = Normalize_Data(header_file, io_file_dir, output_dir, process_monitor)
 				return process_monitor
-			except (ValueError, FileNotFoundError):
+			except (ValueError, FileNotFoundError, OSError):
 				print("Yup, you broke me :( try running the previous step first")
 				return process_monitor
 
-	elif action == 3 and process_monitor['Normalize']:
+	if action == 3 and process_monitor['Normalize']:
 		process_monitor = File_Combiner(output_dir, process_monitor)
 		return process_monitor
 	elif action == 3:
@@ -123,45 +127,45 @@ def Action_Taker(action, fit_dir, header_file, io_file_dir, output_dir, process_
 		try_anyway = Yes_No_Response("Would you like to try to run this anyways? [Y/N] ")
 		if try_anyway:
 			try:
-				process_monitor = File_Combiner(output_dir)
+				process_monitor = File_Combiner(output_dir, process_monitor)
 				return process_monitor
-			except (ValueError, FileNotFoundError):
+			except (ValueError, FileNotFoundError, OSError):
 				print("Yup, you broke me :(...try running the previous step first")
 				return process_monitor
 
-	elif action == 4 and process_monitor['FileCombine']:
-		process_monitor = Linear_Regression(output_dir)
+	if action == 4 and process_monitor['FileCombine']:
+		process_monitor = Linear_Regression(output_dir, process_monitor)
 		return process_monitor
 	elif action == 4:
 		print("It seems you haven't run step 3 yet. Running this step right now may break me.")
 		try_anyway = Yes_No_Response("Would you like to try to run this anyways? [Y/N] ")
 		if try_anyway:
 			try:
-				process_monitor = Linear_Regression(output_dir)
+				process_monitor = Linear_Regression(output_dir, process_monitor)
 				return process_monitor
-			except (ValueError, FileNotFoundError):
+			except (ValueError, FileNotFoundError, OSError):
 				print("Yup, you broke me :(...try running the previous step first")
 				return process_monitor
 
-	elif action == 5 and process_monitor['LinRegress']:
-		process_monitor = Concentration_Calc(output_dir)
+	if action == 5 and process_monitor['LinRegress']:
+		process_monitor = Concentration_Calc(output_dir, process_monitor)
 		return process_monitor
 	elif action == 5:
 		print("It seems you haven't run step 4 yet. Running this step right now may break me.")
 		try_anyway = Yes_No_Response("Would you like to try to run this anyways? [Y/N] ")
 		if try_anyway:
 			try:
-				process_monitor = Linear_Regression(output_dir)
+				process_monitor = Linear_Regression(output_dir, process_monitor)
 				return process_monitor
-			except (ValueError, FileNotFoundError):
+			except (ValueError, FileNotFoundError, OSError):
 				print("Yup, you broke me :(...try running the previous step first")
 				return process_monitor
 
-	elif action == 6:
+	if action == 6:
 		Generate_Plots()
 		return process_monitor
 
-	elif action == 7:
+	if action == 7:
 		Format_Plate_Data(fit_dir, output_dir, process_monitor)
 		Normalize_Data(header_file, io_file_dir, output_dir, process_monitor)
 		File_Combiner(output_dir, process_monitor)
@@ -172,6 +176,7 @@ def Action_Taker(action, fit_dir, header_file, io_file_dir, output_dir, process_
 
 	elif action == 8:
 		sys.exit()
+	return process_monitor
 
 def Show_Runner():
 	Boiler_Plate_Printer()

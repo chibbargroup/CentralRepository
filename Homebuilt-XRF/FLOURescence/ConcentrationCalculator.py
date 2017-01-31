@@ -60,6 +60,7 @@ def Error_Analysis(data, cal_curves, replicate_count):
 	error_results = pd.DataFrame.from_dict(sample_error)
 	final_results = pd.concat([data, error_results], axis = 1)
 	final_results = final_results.sort_index(axis=1)
+	return final_results
 
 #Runs the script
 def Concentration_Analysis(raw_sample_data_file, avg_sample_data_file, calibration_curve_file, output_dir):

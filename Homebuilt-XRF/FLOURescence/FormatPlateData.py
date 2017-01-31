@@ -98,11 +98,11 @@ def combinePeakData(peakdatDict):
 #iterates though all .fit files in a directory, merges their data into a single dataframe, and saves it to disk
 def ExtractDirectory(file_dir, output_dir, delim=","):
     dirsDict = {}
-    ydatdir = join(output_dir,'spectra')
+    ydatadir = join(output_dir,'spectra')
     peakfitdir = join(output_dir, 'peakfits')
 
-    if not isdir(ydatdir):
-        mkdir(ydatdir)
+    if not isdir(ydatadir):
+        mkdir(ydatadir)
     if not isdir(peakfitdir):
         mkdir(peakfitdir)
 
@@ -133,6 +133,6 @@ def ExtractDirectory(file_dir, output_dir, delim=","):
             ydatCombined.to_csv(ydat_filename, sep=delim, index=False)
             print('Writing...' + ydat_filename)
             peakcombined = combinePeakData(peakfitDict)
-            peakfit_filename = join(ydatadir, (basename(root).replace('_trans.csv_FITDIR', '') + "_peakfit.csv"))
+            peakfit_filename = join(peakfitdir, (basename(root).replace('_trans.csv_FITDIR', '') + "_peakfit.csv"))
             peakcombined.to_csv(peakfit_filename, sep=delim, index=False)
             print('Writing...' + peakfit_filename)
