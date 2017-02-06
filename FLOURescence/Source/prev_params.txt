@@ -1,0 +1,4 @@
+C:\Users\John\Desktop\Test\FIT
+C:\Users\John\Desktop\Test\labels.csv
+C:\Users\John\Desktop\Test\Io_files
+C:\Users\John\Desktop\Test\output
