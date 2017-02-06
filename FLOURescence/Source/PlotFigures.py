@@ -4,10 +4,22 @@ Written by J. Hayes; last editted 2/3/2017
 
 Purpose: A script to plot the XRF spectra and their corresponding fits. Also plots the calibration curves
 
-Draft Notes:
+Notes: 
+Uses pyplot from matplotlib; will ahave to include when building the executable
 The main engine for the spectra plotting is Process_Fit_Spectra
+The main engine for plotting the calibration curves is Process_Calibration_Curves
+Main_Plotter runs both of the above in one shot (calibratin curves first, then XRF spectra)
 
-Will add separate module to plot the calibration curves, then make function that runs both sub-scripts
+Input:
+1) calibration_dir - directory containing the calibration curve file and cal_concentratino file
+2) cal_measure_dir - directory containing the combined calibration measurement files
+3) spectra_dir - directory containing the XRF spectra and fit files
+4) header_file - file containing the sample label information
+5) output_dir - directory in which the output should be saved (folders inside this directory will be created)
+
+Output:
+Spectra and fits will be saved in output_dir/spectra_plots; plots for each plate will be saved in directories with the plate name
+Calibration curves will be saved in calibration_dir/cal_curve_plots
 
 '''
 
@@ -182,6 +194,7 @@ data_dir = 'C:/Users/John/Desktop/Test/Output/combined_files'
 #Process_Fit_Spectra(spectra_dir, header_file, output_dir)
 #Read_Concentrations(calibration_dir)
 #df = Read_Calibration_Curves(calibration_dir)
-'''
+
 
 Main_Plotter(calibration_dir, data_dir, spectra_dir, header_file, output_dir)
+'''

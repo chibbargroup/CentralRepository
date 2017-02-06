@@ -5,6 +5,7 @@ from NormalizeData import Batch_Process
 from FileCombiner import Data_Separator
 from LinearRegression import Linear_Regression_Script
 from ConcentrationCalculator import Concentration_Analysis
+from PlotFigures import Main_Plotter
 #Global Library Imports
 from os.path import isfile, join, isdir
 from os import mkdir, remove
@@ -80,8 +81,13 @@ def Concentration_Calc(output_dir, process_monitor):
 	return process_monitor
 
 #Generates plots of the spectra and their fits as well as the calibration curves; not yet implemented
-def Generate_Plots():
-	print("Sorry, I've actually not be implemented yet, but should be soon")
+def Generate_Plots(output_dir, header_file, process_monitor):
+	calibration_dir = join(output_dir, 'calibration_results')
+	cal_measurement_dir = join(output_dir, 'combined_files')
+	spectra_dir = join(output_dir, 'spectra')
+	Main_Plotter(calibration_dir, cal_measurement_dir, spectra_dir, header_file, output_dir)
+	process_monitor['Plots'] = True
+	return process_monitor
 
 #Prints out possible actions the user can take; needs to be updated as features are added/removed 
 def Action_Decider():
@@ -161,10 +167,20 @@ def Action_Taker(action, fit_dir, header_file, io_file_dir, output_dir, process_
 				print("Yup, you broke me :(...try running the previous step first")
 				return process_monitor
 
-	if action == 6:
-		Generate_Plots()
+	if action == 6 and process_monitor['LinRegress'] and process_monitor['FileCombine']:
+		process_monitor = Generate_Plots(output_dir, header_file, process_monitor)
 		return process_monitor
-
+	elif action == 6:
+		print("It seems you haven't run the required previous steps yet. Running this step right now may break me.")
+		try_anyway = Yes_No_Response("Would you like to try to run this anyways? [Y/N] ")
+		if try_anyway:
+			try:
+				process_monitor = Generate_Plots(output_dir, header_file, process_monitor)
+				return process_monitor
+			except (ValueError, FileNotFoundError, OSError):
+				print("Yup, you broke me :(...try running the previous step first")
+				return process_monitor
+				
 	if action == 7:
 		Format_Plate_Data(fit_dir, output_dir, process_monitor)
 		Normalize_Data(header_file, io_file_dir, output_dir, process_monitor)
@@ -182,7 +198,7 @@ def Show_Runner():
 	Boiler_Plate_Printer()
 	fit_dir, header_file, io_file_dir, output_dir = Get_Input_Parameters()
 	process_monitor = {'FormatPlate': False, 'Normalize': False, 'FileCombine': False,
-					'LinRegress': False, 'ConcCalc': False, 'End': False}
+					'LinRegress': False, 'ConcCalc': False, 'Plots': False}
 	stop = False
 	while not stop:
 		action = Action_Decider()
