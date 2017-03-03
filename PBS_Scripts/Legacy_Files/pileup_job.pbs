@@ -1,0 +1,31 @@
+###
+#
+# The PBS Header Portion (Resource Request Settings)
+#
+###
+
+##Set the shell
+#! /bin/bash
+#PBS	-S	/bin/bash		
+
+##Main request settings: no. of processors, walltime, ram request
+#PBS	-l	procs=1		
+#PBS	-l	walltime=72:00:00
+#PBS	-l	pmem=10gb	
+
+##Email settings; a = when aborted, b = when started, e = when finished
+#PBS	–M	d.sanche14@gmail.com
+#PBS	-m	abe		
+
+
+###
+#
+# The Script Portion
+#
+###
+## Initialize Programs
+module load application/samtools/1.3.1
+cd $PBS_O_WORKDIR
+
+## Run Program
+samtools mpileup -Duf ../ref_genome/desi-v3/Ca_uwaV3.0_desi_ref.fasta -b ./bam_list.txt > all.raw.bcf

@@ -91,10 +91,10 @@ def Linear_Regression_Calculator(cal_data):
 		if element != "Concentrations":
 			data = np.array(cal_data.ix[element])
 			slope, intercept, r_value, p_value, std_error = stats.linregress(concentrations, data)
-			n, lod, loq, xi_2, xi = Regression_Stats(concentrations, std_error, intercept)
-			std_dev_y = Std_Dev_Y_Calculator(data, concentrations, slope, intercept)
-			reg_values = [slope, intercept, r_value, p_value, std_error, n, lod, loq, std_dev_y, xi, xi_2]
-			reg_labels = ["slope", "intercept", "r_value", "p_value", "std_err", "n", "LOD", "LOQ", "std_dev_y", "xi", "xi_2"]
+			n, lod, loq, xi_2, xi = Regression_Stats(concentrations, std_error, intercept, slope)
+			ssr = SSR_Calculator(data, concentrations, slope, intercept)
+			reg_values = [slope, intercept, r_value, p_value, std_error, n, lod, loq, ssr, xi, xi_2]
+			reg_labels = ["slope", "intercept", "r_value", "p_value", "std_err", "n", "LOD", "LOQ", "ssr", "xi", "xi_2"]
 			cal_curve = pd.DataFrame(reg_values, columns=[element], index=reg_labels)
 			cal_curve_list += [cal_curve]
 	cal_curve_results = pd.concat(cal_curve_list, axis = 1)
@@ -102,7 +102,7 @@ def Linear_Regression_Calculator(cal_data):
 
 #Separate script to calculate various extra statistics about the regression;
 #runs as part of the Linear_Regression_Calculator module
-def Regression_Stats(concentrations, std_error, intercept):
+def Regression_Stats(concentrations, std_error, intercept, slope):
 	n = len(concentrations)
 	lod = 3.3*std_error/intercept
 	loq = 10*std_error/intercept
@@ -114,13 +114,12 @@ def Regression_Stats(concentrations, std_error, intercept):
 	return n, lod, loq, xi_2, xi
 
 #Calculate the standard deviation in the y values
-def Std_Dev_Y_Calculator(cal_data, concentrations, slope, intercept):
-	di_2 = 0
+def SSR_Calculator(cal_data, concentrations, slope, intercept):
+	ssr = 0
 	for i in range(0, len(cal_data)):
-		di = cal_data[i] - slope*concentrations[i] + intercept
-		di_2 += di**2
-	std_dev_y = (di_2/(len(concentrations)-2))**0.5
-	return std_dev_y
+		di = cal_data[i] - slope*concentrations[i] - intercept
+		ssr += di**2	
+	return ssr
 
 #Run the script
 def Linear_Regression_Script(cal_data_file, output_dir):

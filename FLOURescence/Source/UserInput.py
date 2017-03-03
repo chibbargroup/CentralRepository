@@ -144,7 +144,7 @@ def Get_Input_Parameters():
 			user_satisfied = True
 		else:
 			print("Alright, that's cool. Let's try this again then")
-			fit_dir, header_file, output_dir = User_Input()
+			fit_dir, header_file, io_file_dir, output_dir = User_Input()
 	Previous_Parameters_Writer(fit_dir, header_file, io_file_dir, output_dir)
 	return fit_dir, header_file, io_file_dir, output_dir
 

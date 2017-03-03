@@ -39,7 +39,7 @@ def Element_Parse(data, ca_analysis):
 		element_list = ['Ca']
 	else:
 		#Can change list as needed
-		element_list = ['Mn','Cu','Co','Ni','Fe','Zn','Mo','Se','Rb','Cd'] 
+		element_list = ['Mn','Cu','Co','Ni','Fe','Zn','Mo','Se','Rb'] 
 
 	for element in data.index:
 		if element not in element_list:

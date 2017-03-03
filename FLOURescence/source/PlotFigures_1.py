@@ -130,7 +130,7 @@ def Process_Fit_Spectra(spectra_dir, header_file, output_dir):
 #Read in the concentrations from the saved cal_concentrations.csv file
 def Read_Concentrations(calibration_dir):
 	conc_file = join(calibration_dir, "cal_concentrations.csv")
-	conc_value_df = pd.read_csv(conc_file, header = None)
+	conc_value_df = pd.read_csv(conc_file, header = None, index_col = 0)
 	conc_values = np.array(conc_value_df[1])
 	return conc_values
 
@@ -155,20 +155,17 @@ def Read_Calibration_Measurements(data_dir):
 #Plot the measured data and the fitted curve
 def Make_Cal_Curve_Plot(cal_conc, cal_curve, cal_measurements, element, output_dir):
 	file_name = join(output_dir, element + '.png')
-	print("Writing...%s" %file_name)
+	#print("Writing...%s" %file_name)
 	#Calculate plot points for calibration curve
+	
 	cal_curve_y1 = cal_conc[0]*cal_curve[0] + cal_curve[1]
 	cal_curve_y2 = cal_conc[-1]*cal_curve[0] + cal_curve[1]
+
 	cal_measure_y = [cal_curve_y1, cal_curve_y2]
 	cal_measure_x = [cal_conc[0], cal_conc[-1]]
+
 	plt.plot(cal_measure_x, cal_measure_y)
-	#Deals with case where cal concs are not ordered from biggest to smallest
-	if cal_conc[-1] > cal_conc[0]:
-		cal_conc = np.flipud(cal_conc)
-		plt.scatter(cal_conc, cal_measurements)
-	else:
-		plt.scatter(cal_conc, cal_measurements)
-	
+	plt.scatter(sorted(cal_conc), sorted(cal_measurements))
 	plt.xlabel('Concentration (ppm)')
 	plt.ylabel('Peak Area (a.u.)')
 	plt.title(element)
@@ -187,14 +184,14 @@ def Process_Calibration_Curves(calibration_dir, measurement_dir):
 #The engine that runs entire script (spectra plotting and calibration curve plotting)
 def Main_Plotter(calibration_dir, cal_measure_dir, spectra_dir, header_file, output_dir):
 	Process_Calibration_Curves(calibration_dir, cal_measure_dir)
-	Process_Fit_Spectra(spectra_dir, header_file, output_dir)
+#	Process_Fit_Spectra(spectra_dir, header_file, output_dir)
 
-'''
+
 header_file = 'C:/Users/John/Desktop/Test/labels.csv'
 spectra_dir = 'C:/Users/John/Desktop/Test/Output/Spectra'
-output_dir = 'C:/Users/John/Desktop/Test/Output/'
-calibration_dir = 'C:/Users/John/Desktop/Test/Output/calibration_results'
-data_dir = 'C:/Users/John/Desktop/Test/Output/combined_files'
+output_dir = 'C:/Users/John/Desktop/Test/Chibbar Group Work/XRF Analysis/XRF_Analysis/Non-Ca_Analysis/Old_Data/Output/'
+calibration_dir = 'C:/Users/John/Desktop/Chibbar Group Work/XRF Analysis/XRF_Analysis/Non-Ca_Analysis/Old_Data/Output/calibration_results'
+data_dir = 'C:/Users/John/Desktop/Chibbar Group Work/XRF Analysis/XRF_Analysis/Non-Ca_Analysis/Old_Data/Output/combined_files'
 
 #Process_Fit_Spectra(spectra_dir, header_file, output_dir)
 #Read_Concentrations(calibration_dir)
@@ -202,4 +199,3 @@ data_dir = 'C:/Users/John/Desktop/Test/Output/combined_files'
 
 
 Main_Plotter(calibration_dir, data_dir, spectra_dir, header_file, output_dir)
-'''

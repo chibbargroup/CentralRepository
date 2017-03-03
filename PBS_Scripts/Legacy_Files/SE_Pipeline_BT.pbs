@@ -1,0 +1,72 @@
+ja###
+#
+# The PBS Header Portion (Resource Request Settings)
+#
+###
+
+##Set the shell
+#! /bin/bash
+#PBS	-S	/bin/bash		
+
+##Main request settings: no. of processors, walltime, ram request
+#PBS	-l	procs=8		
+#PBS	-l	wallBme=00:15:00
+#PBS	-l	pmem=2gb	
+
+##Email settings; a = when aborted, b = when started, e = when finished
+#PBS	–M	john.hayes@usask.ca
+#PBS	-m	abe		
+
+
+###
+#
+# The Script Portion
+#
+###
+
+## Initialize Programs
+module load java
+JAR=/global/software/trimmomatic/Trimmomatic-0.36/trimmomatic-0.36.jar
+module load application/bowtie2/2.2.3 
+module load application/samtools/1.3.1
+
+## Set file directories/locations
+FILE_DIRECTORY = $1
+BOWTIE_GENOME_LOC="/mnt/data1/refrence_genomes/Chickpea/desi-v3/desi-v3" #Bowtie reference created by bowtie2-build
+SAMTOOLS_GENOME_LOC="/mnt/data1/refrence_genomes/Chickpea/desi-v3/Ca_uwaV3.0_desi_ref.fasta" #Samtools reference created by sametools faidx
+OUTPUT_FOLDER="$FILE_DIRECTORY_output"
+mkdir $OUTPUT_FOLDER
+
+
+## Run trimmomatic
+java -jar $JAR SE -threads ${PBS_NUM_PPN} -phred33 $1 ./$OUTPUT_FOLDER/$1.trim.gz ILLUMINACLIP:TruSeq3-SE.fa:2:30:6 HEADCROP:20 SLIDINGWINDOW:4:15 MINLEN:36 CROP:170 2> ./$OUTPUT_FOLDER/trim_output.log
+
+
+## Create fastqc file
+fastqc -q ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.gz
+
+
+## Run Bowtie2
+bowtie2 --end-to-end -p $PBS_NUM_PPN -x $BOWTIE_GENOME_LOC -U ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.gz -S ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sam 2> ./$OUTPUT_FOLDER/bowtie2_output.log
+
+## Use Samtools to clean up the output and convert the SAM to BAM files
+samtools view -bS ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sam > ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.bam 2> ./$OUTPUT_FOLDER/samtools_view_output.log
+
+# Samtools sort... sorts the bam file by read name
+samtools sort ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.bam ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sort 2> ./$OUTPUT_FOLDER/samtools_sort_output.log
+
+# Samtools rmdup removes duplicate read alignments.
+samtools rmdup ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sort.bam ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.rmdup.bam 2> ./$OUTPUT_FOLDER/samtools_rmdup_output.log
+
+# samtools index creates an index of the BAM file so it can be loaded into a viewer
+samtools index ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sort.rmdup.bam
+
+# Appends final BAM file to a list for latter use with samtools mpileup
+echo "./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sort.rmdup.bam" >> bam_list.txt
+
+# Clean up the created files
+rm -f ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.gz
+rm -f ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sam
+rm -f ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.bam
+rm -f ./$OUTPUT_FOLDER/$FILE_DIRECTORY.trim.bowtie2.sort.bam
+

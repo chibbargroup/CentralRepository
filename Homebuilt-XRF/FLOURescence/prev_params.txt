@@ -1,4 +1,0 @@
-C:\Users\John\Desktop\Test\FIT
-C:\Users\John\Desktop\Test\labels.csv
-C:\Users\John\Desktop\Test\Io_Files
-C:\Users\John\Desktop\Test\Output

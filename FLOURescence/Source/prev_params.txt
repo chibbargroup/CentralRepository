@@ -1,4 +1,4 @@
-C:\Users\John\Desktop\Test\FIT
-C:\Users\John\Desktop\Test\labels.csv
-C:\Users\John\Desktop\Test\Io_files
-C:\Users\John\Desktop\Test\output
+C:\Users\John\Desktop\Chibbar Group Work\XRF Analysis\XRF_Analysis\Ca_Analysis\Old_Data\FIT
+C:\Users\John\Desktop\Chibbar Group Work\XRF Analysis\XRF_Analysis\Ca_Analysis\Old_Data\labels.csv
+C:\Users\John\Desktop\Chibbar Group Work\XRF Analysis\XRF_Analysis\Ca_Analysis\Old_Data\io_files
+C:\Users\John\Desktop\Chibbar Group Work\XRF Analysis\XRF_Analysis\Ca_Analysis\Old_Data\Output

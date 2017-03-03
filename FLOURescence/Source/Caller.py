@@ -187,7 +187,7 @@ def Action_Taker(action, fit_dir, header_file, io_file_dir, output_dir, process_
 		File_Combiner(output_dir, process_monitor)
 		Linear_Regression(output_dir, process_monitor)
 		Concentration_Calc(output_dir, process_monitor)
-		Generate_Plots()
+		Generate_Plots(output_dir, header_file, process_monitor)
 		return process_monitor
 
 	elif action == 8:

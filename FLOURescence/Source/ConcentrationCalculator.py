@@ -41,20 +41,24 @@ def Replicate_Counter(data):
 	return replicate_count
 
 #Calculates the error for each measurement and then adds it to the main dataframe
-def Error_Analysis(data, cal_curves, replicate_count):
+def Error_Analysis(data, raw_data, cal_curves, replicate_count):
 	sample_error = {}
 	for column in data:
 		single_error = {}
 		for element in data[column].index:
-			x_avg = data.ix[element,column]
-			std_dev_y = cal_curves.ix['std_dev_y', element]
+			x_avg = data.ix[element, column]
+			y_avg = raw_data.ix[element, column]
+			slope = cal_curves.ix['slope', element]
+			intercept = cal_curves.ix['intercept', element]
+			ssr = cal_curves.ix['ssr', element]
 			xi = cal_curves.ix['xi', element]
 			xi_2 = cal_curves.ix['xi_2', element]
 			m = abs(cal_curves.ix['slope', element])
-			replicate = replicate_count[column]
 			n = cal_curves.ix['n', element]
 			d = n*xi_2 - xi**2
-			error = std_dev_y/m*(1/replicate + (x_avg*n)/d + xi_2/d + 2*x_avg*xi/d)**0.5
+			std_b = (ssr/(n-2))**0.5*(xi/d)**0.5
+			std_m = (ssr/(n-2))**0.5*(n/d)**0.5
+			error = x_avg*((std_b/(y_avg-intercept))**2 + (std_m/slope)**2)**0.5
 			single_error[element] = error
 		sample_error[column + '-Error'] = single_error
 	error_results = pd.DataFrame.from_dict(sample_error)
@@ -77,7 +81,7 @@ def Concentration_Analysis(raw_sample_data_file, avg_sample_data_file, calibrati
 	raw_concs.to_csv(join(output_dir, "sample_concentrations.csv"))
 	
 	#Analyze the avg data points
-	avg_data = Concentration_Calculator(avg_data, cal_curves)
-	results = Error_Analysis(avg_data, cal_curves, replicate_count)
+	avg_concs = Concentration_Calculator(avg_data, cal_curves)
+	results = Error_Analysis(avg_concs, avg_data, cal_curves, replicate_count)
 	results.to_csv(join(output_dir, "avg_results.csv"))
 	return results
