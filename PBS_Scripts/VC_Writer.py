@@ -115,7 +115,7 @@ def MPileup_Region_Template(region_file, ref_file, bam_list, out_file, email):
 	"cd $PBS_O_WORKDIR\n" 
 
 	piluep_part4 = "\n## Run Program\n" + \
-	"samtools mpileup -g -t DP,AD -l %s -f %s -b %s | bcftools call -m -v -o %s" %(region_file, ref_file, bam_list, out_file)
+	"samtools mpileup -g -t DP,AD -L %s -f %s -b %s | bcftools call -m -v -o %s" %(region_file, ref_file, bam_list, out_file)
 	
 	file_text = pileup_part1 + pileup_part2 + pileup_part3 + piluep_part4
 	return file_text
