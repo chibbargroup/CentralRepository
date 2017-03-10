@@ -90,7 +90,7 @@ echo "samtools view complete"
 
 #Samtools sort... sorts the bam file by read name
 echo "samtools sort"
-samtools sort ./$OUTPUT_FOLDER/$1.trim.bowtie2.bam ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort 2> ./$OUTPUT_FOLDER/samtools_sort_output.log
+samtools sort ./$OUTPUT_FOLDER/$1.trim.bowtie2.bam -o ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.bam 2> ./$OUTPUT_FOLDER/samtools_sort_output.log
 echo "samtools sort complete"
 
 #Samtools rmdup removes duplicate read alignments.
