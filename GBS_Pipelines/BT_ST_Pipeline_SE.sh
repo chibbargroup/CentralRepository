@@ -90,12 +90,12 @@ echo "samtools view complete"
 
 #Samtools sort... sorts the bam file by read name
 echo "samtools sort"
-samtools sort ./$OUTPUT_FOLDER/$1.trim.bowtie2.bam ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort 2> ./$OUTPUT_FOLDER/samtools_sort_output.log
+samtools sort ./$OUTPUT_FOLDER/$1.trim.bowtie2.bam -o ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.bam 2> ./$OUTPUT_FOLDER/samtools_sort_output.log
 echo "samtools sort complete"
 
 #Samtools rmdup removes duplicate read alignments.
 echo "samtools rmdup"
-samtools rmdup ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.bam ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.rmdup.bam 2> ./$OUTPUT_FOLDER/samtools_rmdup_output.log
+samtools rmdup -s ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.bam ./$OUTPUT_FOLDER/$1.trim.bowtie2.sort.rmdup.bam 2> ./$OUTPUT_FOLDER/samtools_rmdup_output.log
 echo "samtools rmdup complete"
 
 #samtools index creates an index of the BAM file so it can be loaded into a viewer
