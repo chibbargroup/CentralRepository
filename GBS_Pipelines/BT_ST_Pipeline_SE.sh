@@ -66,13 +66,13 @@ mkdir $OUTPUT_FOLDER
 #trimmomatic command and uncomment the cp command.  This is to allow the chain of output file to not be broken
 #and allow the rest of the script to continue to run.
 echo "Trimming file $1"
-java -jar /usr/share/java/trimmomatic-0.32.jar SE -threads $NUM_THEADS -phred33 $1 ./$OUTPUT_FOLDER/$1.trim.gz ILLUMINACLIP:TruSeq3-SE.fa:2:30:6 HEADCROP:20 SLIDINGWINDOW:4:15 MINLEN:36 2> ./$OUTPUT_FOLDER/trim_output.log
+java -jar /usr/share/java/trimmomatic-0.36.jar SE -threads $NUM_THEADS -phred33 $1 ./$OUTPUT_FOLDER/$1.trim.gz ILLUMINACLIP:IonTorrent.fa:2:30:6 HEADCROP:20 SLIDINGWINDOW:4:15 MINLEN:36 2> ./$OUTPUT_FOLDER/trim_output.log
 #cp $1 ./$OUTPUT_FOLDER/$1.trim
 echo "Trimming Complete"
 
 
 echo "Creating FastQC File of Trimmed Data"
-/usr/bin/FastQC/fastqc -q ./$OUTPUT_FOLDER/$1.trim.gz
+fastqc -q ./$OUTPUT_FOLDER/$1.trim.gz
 echo "FastQC done"
 
 
