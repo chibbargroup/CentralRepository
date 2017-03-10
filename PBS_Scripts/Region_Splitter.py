@@ -1,14 +1,29 @@
+'''
+Region Splitter, J. Hayes, 3/10/207
+
+Usage: python Region_Splitter.py <fai file> <out_dir>
+
+Purpose: Breaks up a reference genome into several smaller, more manageable regions in order
+to speed up the mpileup process. Run mpileup and bcftools on these smaller regions in parallel
+in order to enhance process efficiency
+
+Re module used to split up regions based on pattern reconginition (i.e., by chromosome). Change
+code starting at line 27 to generate regions as needed. (Change pattern search term to fit needs.)
+Will also need to change region list dictionary keys; output file names are the dictionary keys.
+
+Also generates list of region files generated for use with VC_Writer region mode 
+
+'''
+
 from os.path import isfile, isdir, join, basename, dirname
 import sys, re
-'''
+
 if len(sys.argv) != 3:
 	print("whoops, that doesn't work")
 else:
 	file = sys.argv[1]
 	save_dir = sys.argv[2]
-'''
-save_dir = './test_out'
-file = './test-2.fai'
+
 
 region_list = {'AL': [], 'BL': [], 'DL': [], 'AS': [], 'BS': [], 'DS': [], 'U': [], 'B': []}
 with open(file, 'r') as f:
