@@ -12,12 +12,22 @@ region_list = {'morex': [], 'H-chrom': [], 'chrom': []}
 with open(file, 'r') as f:
 	for line in f:
 		region_name = line.split('\t')[0]
-		if re.match('morex', region_name):
-			region_list['morex'].append(region_name)
-		elif re.match('\d.', region_name):
-			region_list['H-chrom'].append(region_name)
-		elif re.match('\d', region_name):
-			region_list['chrom'].append(region_name)
+		if re.match('.?_/dAL', region_name):
+			region_list['AL'].append(region_name)
+		elif re.match('.?_\dAS', region_name):
+			region_list['AS'].append(region_name)
+		elif re.match('.?_\dBL', region_name):
+			region_list['BL'].append(region_name)
+		elif re.match('.?_\dBS', region_name):
+			region_list['BS'].append(region_name)
+		elif re.match('.?_\dDL', region_name):
+			region_list['DL'].append(region_name)
+		elif re.match('.?_\dDS', region_name):
+			region_list['DS'].append(region_name)
+		elif re.match('.?_\dB', region_name):
+			region_list['B'].append(region_name)
+		elif re.match('_U', region_name):
+			region_list['U'].append(region_name)
 
 file_list = []
 for key in region_list:
