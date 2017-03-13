@@ -35,7 +35,7 @@ def Directory_Maker(directory_list):
 			mkdir(folder)
 
 
-def BT_ST_PBS_Maker(results_dir, data_file, reference_genome, email):
+def BT_ST_PBS_Maker(mem_requirement, results_dir, data_file, reference_genome, email):
 	#Define and make directories in which to save results
 	trimmed_dir = join(results_dir,'trimmed_seqs')
 	bowtie_dir = join(results_dir, 'bowtie_alignments')
@@ -74,9 +74,9 @@ def BT_ST_PBS_Maker(results_dir, data_file, reference_genome, email):
 #PBS -S /bin/bash
 
 ##Main request settings:
-#PBS	-l	nodes=1:ppn=2
-#PBS	-l	walltime=24:00:00
-#PBS	-l	mem=4gb
+#PBS	-l	nodes=1:ppn=4
+#PBS	-l	walltime=0:30:00
+#PBS	-l	mem=%s
 
 ##Email settings
 #PBS -M %s
@@ -96,7 +96,7 @@ module load java
 module load application/bowtie2/2.2.3
 module load application/samtools/1.3.1
 JAR=/global/software/trimmomatic/Trimmomatic-0.36/trimmomatic-0.36.jar
-""" %email
+""" %(mem_requirement, email)
 	pbs_part2 = "\n##Run trimmomatic\n" + \
 	"java -jar $JAR SE -threads $PBS_NUM_PPN -phred33 %s %s " %(data_file, trimmed_file) + \
 	"ILLUMINACLIP:%s:2:30:6 HEADCROP:20 SLIDINGWINDOW:4:15 MINLEN:36 CROP:170 \n" %(trim_seq)  
@@ -132,12 +132,12 @@ def File_Writer(text, file_name):
 	with open(file_name, 'w') as f:
 		f.write(text)
 
-def __Main__(data_dir, output_dir, results_dir, referene_genome, email = 'blank@email.com'):
+def __Main__(data_dir, output_dir, results_dir, referene_genome, mem_requirement, email = 'blank@email.com'):
 	file_list = [join(data_dir, f) for f in listdir(data_dir) if isfile(join(data_dir,f))]
 	Directory_Maker([output_dir])
 	for file in file_list:
 		out_file = join(output_dir ,basename(file).replace(".fa.gz", "") + ".pbs")
-		text_string = BT_ST_PBS_Maker(results_dir, file, referene_genome, email)
+		text_string = BT_ST_PBS_Maker(mem_requirement, results_dir, file, referene_genome, email)
 		File_Writer(text_string, out_file)
 
 def Arg_Parse_Init():
@@ -145,15 +145,16 @@ def Arg_Parse_Init():
 	parser.add_argument('--data', '-d', help="path to directory containing data", required=True)
 	parser.add_argument('--results_dir', '-r', help="path to directory where BT_SP pipeline results will be saved", required=True)
 	parser.add_argument('--pbs_dir', '-o', help="path where PBS script files will be saved; default is current directory", default='./')
+	parser.add_argument('--memory_required', '-m', help="how much memory is required, format #gb", required=True)
 	parser.add_argument('--ref_genome', '-g', help="path to the reference genome, do not include any file extensions", required = True)
 	parser.add_argument('--email', '-e', help="send process updates to this email address")
 	return parser
 
 def Action_Tree(args):
 	if not args.email:
-		__Main__(args.data, args.pbs_dir, args.results_dir, args.ref_genome)
+		__Main__(args.data, args.pbs_dir, args.results_dir, args.ref_genome, args.memory_required)
 	else:
-		__Main__(args.data, args.pbs_dir, args.results_dir, args.ref_genome, args.email)
+		__Main__(args.data, args.pbs_dir, args.results_dir, args.ref_genome, args.memory_required, args.email)
 
 args = Arg_Parse_Init().parse_args()
 Action_Tree(args)
