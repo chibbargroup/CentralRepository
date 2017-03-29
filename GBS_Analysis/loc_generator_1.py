@@ -9,11 +9,11 @@ def ArgParse_Init():
 	parser.add_argument('--out_file', '-o', type=str, required = True, help = "Where to save the output file")
 	parser.add_argument('--output_type', '-t', type = str.lower, required = True,
 		choices = ['mst', 'joinmap'], help = "MST or joinmap loc file output")
-	parser.add_argument('--relabel_loci', '-l', action = 'store_true', default = False, 
+	parser.add_argument('--relabel_loci', '-l', type = bool, required = False, default = False, 
 		help = "Use if you need to relabel loci points (currently implemented for wheat sequences only)")
-	parser.add_argument('--remove_duplicates', '-r', action = 'store_true', help = 'Use if you want only one SNP per scaffold' + \
+	parser.add_argument('--remove_duplicates', '-r', type = bool, default = False, help = 'Use if you want only one SNP per scaffold' + \
 		' for cases where there are a large number of SNPs and scaffolds; Default is False')
-	parser.add_argument('--exclude_heterozygotes', '-e', action = 'store_true', help = 'Choose if you want to exclude sites with' + \
+	parser.add_argument('--exclude_heterozygotes', '-e', type = bool, default = False, help = 'Choose if you want to exclude sites with' + \
 		' heterozygous assignments (h); Default is True')
 	return parser
 
@@ -126,18 +126,17 @@ def JM_Header(parameters):
 def MST_Parameter_Input(data):
 	popt = input("Please input the population type (F2, RIL, DH1, etc.): ")
 	pop_name = input("Please input a name for this population: ")
-	distance_function = input("Please input the distance function (kosambi or haldane): ").lower()
+	distance_function = input("Please input the distance function (kosambi or haldane): ").lower
 	cut_off_p_value = input("Please input the threshold for clustering (suggested 0.000001): ")
 	no_map_dist = input("Please input the minimum mapping distance in centimorgans (suggested 2): ")
 	no_map_size = input("Please put the maximum marker separation distance (recommended 15): ")
 	missing_threshold = input("Please put the maximum amount of missing markers (as decimal, recommended 0.25): ")
-	estimation_before_clustering = input("Estimate missing data before clustering? (yes or no): ").lower()
-	detect_bad_data = input("Should the program try to detect bad data? (yes or no): ").lower()
-	objective_function = input("What objective function should be used (COUNT or ML)? ").upper()
+	estimation_before_clustering = input("Estimate missing data before clustering? (yes or no): ").lower
+	objective_function = input("What objective function should be used (COUNT or ML)? ").upper
 	nloc = len(data.keys())
 	nind = len(list(data.values())[1].split('\t'))
 	parameters = [popt, pop_name, distance_function, cut_off_p_value, no_map_dist, no_map_size, missing_threshold,
-	estimation_before_clustering, detect_bad_data, objective_function, nloc, nind]
+	estimation_before_clustering, objective_function, nloc, nind]
 	return parameters
 
 def MTS_Header(parameters):
