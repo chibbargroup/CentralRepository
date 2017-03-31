@@ -91,13 +91,12 @@ def Spectra_Plotter(spectra, spectrum_file, output_dir):
 
 #Makes a single plot and saves it as output_dir/sample_name (note output_dir is whatever is specified when called)
 def Make_Spectrum_Plot(energy, y_data, fit, sample_name, output_dir):
-	file_name = join(output_dir, sample_name) + '.png'
+	file_name = join(output_dir, sample_name) + '_0.png'
 	#Deal with sample repeat cases
-	if isfile(file_name):
-		i = 1 
-		while isfile(file_name):
-			file_name = file_name.replace('.png', '') + '_%s.png' %i
-			i += 1 
+	i = 1
+	while isfile(file_name):
+		file_name = file_name.replace('.png', '')[:-2] + '_%s.png' %i
+		i += 1 
 
 	plt.plot(energy, y_data)
 	plt.plot(energy, fit)
