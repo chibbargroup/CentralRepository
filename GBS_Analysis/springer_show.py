@@ -153,6 +153,6 @@ def __Main__():
 		parent_df = Parent_Parse(df, parent_dict)
 		parent_genos = Parent_Genotyper(parent_df)
 		final_df = Sample_Genotyper(df, parent_genos)
-		final_df.to_csv(join(file_dir, "assigned_alleles.csv"))
+		final_df.to_csv(join(file_dir, "assigned_alleles.tab"), sep='\t')
 
 __Main__()

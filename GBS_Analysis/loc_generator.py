@@ -1,3 +1,23 @@
+'''
+Loc File Generator
+Written by J. Hayes, 3/29/17
+
+Purpose: Takes the output from Springer Show and converts it to a loc file for analysis in JoinMap
+or MSTMap
+
+Usage: python loc_generator [options] -i <in_file> -o <outfile> -t <joinmap or mst>
+
+Notes:
+The relabel loci and remove duplicates options are mostly specifically code to deal with the case of
+Wheat only. These are separate modules in the script which could likely be generalized by another
+ambitious programmer if needed. I would recommend using regular expressions.
+
+Other note: MSTmap uses "X" to denote heterozygous states, while JoinMap uses "h"; unfortunately this has
+not been dealt with here. However, the resulting .loc file can be modified in Excel and h replaced with X 
+using the find and replace function.
+
+'''
+
 from os.path import isdir, dirname, isfile
 from os import mkdir
 from collections import OrderedDict
@@ -135,7 +155,7 @@ def MST_Parameter_Input(data):
 	detect_bad_data = input("Should the program try to detect bad data? (yes or no): ").lower()
 	objective_function = input("What objective function should be used (COUNT or ML)? ").upper()
 	nloc = len(data.keys())
-	nind = len(list(data.values())[1].split('\t'))
+	nind = len(list(data.values())[1].split('\t'))-1
 	parameters = [popt, pop_name, distance_function, cut_off_p_value, no_map_dist, no_map_size, missing_threshold,
 	estimation_before_clustering, detect_bad_data, objective_function, nloc, nind]
 	return parameters
